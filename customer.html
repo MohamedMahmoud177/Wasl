@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وصل — تتبع شحناتك</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script defer src="config.js"></script>
+<script defer src="customer.js"></script>
+</head>
+<body>
+<!-- أداة تشخيص مؤقتة: تعرض أي خطأ برمجي على الشاشة مباشرة -->
+<div id="debugBanner" style="display:none;position:fixed;inset:0;z-index:999;background:#B23A3A;color:#fff;padding:20px;font-family:monospace;font-size:13px;overflow:auto;white-space:pre-wrap;direction:ltr;text-align:left;"></div>
+<script>
+  window.addEventListener("error", function (e) {
+    var b = document.getElementById("debugBanner");
+    b.style.display = "block";
+    b.textContent = "خطأ JS:\n" + e.message + "\nفي: " + e.filename + " سطر " + e.lineno;
+  });
+  window.addEventListener("unhandledrejection", function (e) {
+    var b = document.getElementById("debugBanner");
+    b.style.display = "block";
+    b.textContent = "خطأ (Promise):\n" + (e.reason && e.reason.message ? e.reason.message : e.reason);
+  });
+</script>
+
+<!-- شاشة دخول / تسجيل العميل -->
+<div id="authScreen" class="login-screen">
+  <div class="login-card">
+    <img src="logo.svg" alt="وصل" class="login-logo">
+    <h1>وصل<span class="brand-en">WASL</span></h1>
+    <p class="tagline">تتبع شحناتك الخاصة</p>
+
+    <div class="auth-switch">
+      <button class="auth-tab active" data-mode="login">تسجيل الدخول</button>
+      <button class="auth-tab" data-mode="signup">حساب جديد</button>
+    </div>
+
+    <form id="loginCustForm">
+      <label>البريد الإلكتروني<input type="email" id="custLoginEmail" required></label>
+      <label>كلمة المرور<input type="password" id="custLoginPass" required></label>
+      <p class="login-error" id="custLoginError"></p>
+      <button type="submit" class="btn-primary">دخول</button>
+    </form>
+
+    <form id="signupCustForm" class="hidden-field">
+      <label>الاسم<input type="text" id="custSignName" required></label>
+      <label>رقم الهاتف (نفس الرقم المسجل في شحناتك)<input type="tel" id="custSignPhone" required placeholder="01xxxxxxxxx"></label>
+      <label>البريد الإلكتروني<input type="email" id="custSignEmail" required></label>
+      <label>كلمة المرور<input type="password" id="custSignPass" required minlength="6"></label>
+      <p class="login-error" id="custSignError"></p>
+      <button type="submit" class="btn-primary">إنشاء الحساب</button>
+    </form>
+  </div>
+</div>
+
+<!-- لوحة العميل -->
+<div id="custRoot" class="app-root">
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.svg" alt="شعار وصل" class="brand-logo">
+      <div class="brand-text">
+        <h1>وصل<span class="brand-en">WASL</span></h1>
+        <p class="tagline">شحناتك</p>
+      </div>
+    </div>
+    <div class="user-box">
+      <span id="custUserLabel"></span>
+      <button id="custLogoutBtn" class="mini-btn">خروج</button>
+    </div>
+  </header>
+  <main>
+    <div class="panel">
+      <h2>شحناتي</h2>
+      <div id="custShipmentsList"></div>
+      <p class="empty-hint" id="custEmptyHint">لا توجد شحنات مسجلة بهذا الرقم بعد.</p>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>
